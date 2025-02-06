@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "AdFriend",
+  "version": "1.0",
+  "description": "Replace ads with positive content",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end",
+      "css": ["styles.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/adfriend_icon_16x16.png",
+      "48": "icons/adfriend_icon_48x48.png",
+      "128": "icons/adfriend_icon_128x128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/adfriend_icon_16x16.png",
+    "48": "icons/adfriend_icon_48x48.png",
+    "128": "icons/adfriend_icon_128x128.png"
+  },
+  "options_page": "options.html"
+}

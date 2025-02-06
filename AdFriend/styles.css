@@ -1,0 +1,144 @@
+/* Title Styles */
+h1 {
+  text-align: center; /* Center align the title */
+  color: blue; /* Change text color to blue */
+}
+
+
+/* These styles should ONLY apply to the extension's popup and options page */
+.popup-body, .options-body {
+  width: 300px;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 15px;
+  margin: 0;
+}
+
+/* Container for popup and options */
+.popup-container, .options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Toggle switch styles */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #28a745;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Settings link */
+.settings-link {
+  text-decoration: none;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Form controls */
+.form-control {
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Widget styles (applied only to replaced ads) */
+.adfriend-widget {
+  display: block !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: #f8f9fa !important;
+  border: 1px solid #dee2e6 !important;
+  border-radius: 4px !important;
+  font-size: 0.9em !important;
+  color: #495057 !important;
+  cursor: default !important;
+  pointer-events: none !important;
+  transition: opacity 0.5s ease, transform 0.5s ease !important;
+  will-change: opacity, transform;
+}
+
+.adfriend-widget p {
+  margin: 0 !important;
+  padding: 8px !important;
+  line-height: 1.4 !important;
+  word-break: break-word !important;
+  transition: none !important;
+}
+
+/* Themes */
+.theme-subtle {
+  background: #f8f9fa !important;
+  border-color: #dee2e6 !important;
+}
+
+.theme-nature {
+  background: #e6f4ea !important;
+  border-color: #b7dac4 !important;
+}
+
+.theme-minimal {
+  background: white !important;
+  border-color: #e0e0e0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
