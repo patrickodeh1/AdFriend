@@ -33,6 +33,22 @@
         "Today’s challenge: Read 5 pages of a book. 📖",
         "Today’s challenge: Drink 2 liters of water. 💧"
       ]
+    },
+    {
+      title: "Break Timer",
+      messages: [
+        "Take a 5-minute break! Stretch and breathe. ⏳",
+        "Close your eyes and rest for a minute. 😌",
+        "Time for a quick walk! Refresh your mind. 🚶"
+      ]
+    },
+    {
+      title: "Mindfulness Prompt",
+      messages: [
+        "Take a deep breath and exhale slowly. 🌿",
+        "Think of three things you're grateful for today. ✨",
+        "Close your eyes and focus on your surroundings for a moment. 🧘"
+      ]
     }
   ];
 
@@ -44,27 +60,19 @@
     "iframe[src*='googlesyndication']"
   ];
 
-  function getRandomFunResponse() {
-    const responses = [
-      "Great choice! 🚀",
-      "Interesting pick! 🤔",
-      "That's a popular answer! 🎯",
-      "You have good taste! 😎",
-      "That’s a bold choice! 💪",
-      "Noted! We’ll remember that. 😉"
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
-  }
-
   function handlePollButtonClick(event) {
     const button = event.target;
     const pollQuestion = button.parentElement.querySelector("b").textContent;
     const selectedAnswer = button.textContent;
-
-    // Show a fun response instead of a generic confirmation
-    const responseMessage = getRandomFunResponse();
-    alert(`"${selectedAnswer}" to "${pollQuestion}"\n${responseMessage}`);
-
+    const funResponses = [
+      "Great choice! 🎉",
+      "Nice pick! 👍",
+      "Interesting answer! 🤔",
+      "That's a popular one! 🔥",
+      "You must know your stuff! 😎"
+    ];
+    const randomResponse = funResponses[Math.floor(Math.random() * funResponses.length)];
+    alert(`${randomResponse} You answered "${selectedAnswer}" to "${pollQuestion}"`);
     button.style.backgroundColor = "#4CAF50";
     button.style.color = "white";
     button.disabled = true;
@@ -94,6 +102,9 @@
       widgetContainer.className = "widget-container theme-" + settings.theme;
       widgetContainer.style.width = `${adWidth}px`;
       widgetContainer.style.height = `${adHeight}px`;
+      widgetContainer.style.display = "flex";
+      widgetContainer.style.alignItems = "center";
+      widgetContainer.style.justifyContent = "center";
       widgetContainer.innerHTML = `
         <h4 class="widget-title">${widget.title}</h4>
         <p class="widget-message">${randomMessage}</p>
@@ -105,7 +116,6 @@
 
       widgetContainer.classList.add("loaded");
 
-      // **Replace the entire ad container instead of just clearing it**
       const replacementDiv = document.createElement("div");
       replacementDiv.className = "replacement-widget";
       replacementDiv.appendChild(widgetContainer);
@@ -117,15 +127,11 @@
   const style = document.createElement("style");
   style.textContent = `
     .widget-container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
       background-color: #f9f9f9;
       border: 1px solid #ddd;
       border-radius: 8px;
       padding: 15px;
+      text-align: center;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
@@ -139,7 +145,7 @@
       margin-bottom: 10px;
     }
     .widget-message {
-      font-size: clamp(12px, 4vw, 16px);
+      font-size: 14px;
       color: #666;
     }
     .poll-btn {
@@ -153,10 +159,6 @@
     }
     .poll-btn:hover {
       background-color: #0056b3;
-    }
-    .poll-btn:disabled {
-      background-color: #4CAF50;
-      cursor: not-allowed;
     }
     .theme-dark {
       background-color: #333;

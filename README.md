@@ -6,7 +6,7 @@ AdFriend is a Chrome extension designed to replace online advertisements with po
 
 - **Custom Messages**: Personalize the content displayed in place of ads by adding your own messages.
 - **Themes**: Choose from various themes to customize the appearance of the replaced content.
-- **Widget Types**: Select different widgets such as Fun Facts, Break Timers, Mindfulness prompts, or Motivational quotes to display instead of ads.
+- **Widget Types**: Select different widgets such as Motivational Quotes, Quick Polls, Fun Facts, Daily Challenges, Break Timers, or Mindfulness Prompts to display instead of ads.
 
 ## Installation
 
