@@ -1,7 +1,7 @@
 /* Title Styles */
-h1 {
+.popup-body h1 {
   text-align: center; /* Center align the title */
-  color: blue; /* Change text color to blue */
+  color: blue;
 }
 
 
