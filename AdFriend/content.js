@@ -37,17 +37,17 @@
     {
       title: "Break Timer",
       messages: [
-        "Take a 5-minute break! Stretch and breathe. ⏳",
-        "Close your eyes and rest for a minute. 😌",
-        "Time for a quick walk! Refresh your mind. 🚶"
+        "Take a deep breath and relax for 60 seconds. 🌿",
+        "Time for a 5-minute stretch break! 🏋️",
+        "Look away from the screen and rest your eyes. 👀"
       ]
     },
     {
       title: "Mindfulness Prompt",
       messages: [
-        "Take a deep breath and exhale slowly. 🌿",
-        "Think of three things you're grateful for today. ✨",
-        "Close your eyes and focus on your surroundings for a moment. 🧘"
+        "Close your eyes and take three deep breaths. 🌬️",
+        "Think of one thing you're grateful for today. 🙏",
+        "Slow down and be present in this moment. ⏳"
       ]
     }
   ];
@@ -66,13 +66,11 @@
     const selectedAnswer = button.textContent;
     const funResponses = [
       "Great choice! 🎉",
-      "Nice pick! 👍",
-      "Interesting answer! 🤔",
-      "That's a popular one! 🔥",
-      "You must know your stuff! 😎"
+      "Interesting pick! 🤔",
+      "Nice one! 😃",
+      "Good answer! 👍"
     ];
-    const randomResponse = funResponses[Math.floor(Math.random() * funResponses.length)];
-    alert(`${randomResponse} You answered "${selectedAnswer}" to "${pollQuestion}"`);
+    alert(`You answered "${selectedAnswer}" to "${pollQuestion}"\n${funResponses[Math.floor(Math.random() * funResponses.length)]}`);
     button.style.backgroundColor = "#4CAF50";
     button.style.color = "white";
     button.disabled = true;
@@ -102,9 +100,6 @@
       widgetContainer.className = "widget-container theme-" + settings.theme;
       widgetContainer.style.width = `${adWidth}px`;
       widgetContainer.style.height = `${adHeight}px`;
-      widgetContainer.style.display = "flex";
-      widgetContainer.style.alignItems = "center";
-      widgetContainer.style.justifyContent = "center";
       widgetContainer.innerHTML = `
         <h4 class="widget-title">${widget.title}</h4>
         <p class="widget-message">${randomMessage}</p>
@@ -143,10 +138,12 @@
       font-size: 18px;
       color: #333;
       margin-bottom: 10px;
+      text-align: center;
     }
     .widget-message {
       font-size: 14px;
       color: #666;
+      text-align: center;
     }
     .poll-btn {
       margin: 5px;
