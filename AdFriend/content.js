@@ -1,7 +1,6 @@
 (function () {
   console.log("Extension loaded: Replacing ads with useful widgets...");
 
-  // Default widget configurations.
   const widgets = [
     {
       title: "Motivation",
@@ -37,7 +36,6 @@
     }
   ];
 
-  // Define selectors for ad containers.
   const adSelectors = [
     "div.ad-container",
     ".adsbygoogle",
@@ -46,19 +44,32 @@
     "iframe[src*='googlesyndication']"
   ];
 
-  // Function to handle poll button clicks.
+  function getRandomFunResponse() {
+    const responses = [
+      "Great choice! 🚀",
+      "Interesting pick! 🤔",
+      "That's a popular answer! 🎯",
+      "You have good taste! 😎",
+      "That’s a bold choice! 💪",
+      "Noted! We’ll remember that. 😉"
+    ];
+    return responses[Math.floor(Math.random() * responses.length)];
+  }
+
   function handlePollButtonClick(event) {
     const button = event.target;
     const pollQuestion = button.parentElement.querySelector("b").textContent;
     const selectedAnswer = button.textContent;
-    alert(`You answered "${selectedAnswer}" to "${pollQuestion}"`);
-    // Optionally, change the button style to indicate selection.
+
+    // Show a fun response instead of a generic confirmation
+    const responseMessage = getRandomFunResponse();
+    alert(`"${selectedAnswer}" to "${pollQuestion}"\n${responseMessage}`);
+
     button.style.backgroundColor = "#4CAF50";
     button.style.color = "white";
     button.disabled = true;
   }
 
-  // Function to add event listeners to poll buttons.
   function addPollEventListeners(widgetContainer) {
     const pollButtons = widgetContainer.querySelectorAll(".poll-btn");
     pollButtons.forEach(button => {
@@ -66,36 +77,19 @@
     });
   }
 
-  // Main function to replace ads with widgets.
   function replaceAds() {
     const adContainers = document.querySelectorAll(adSelectors.join(", "));
-    adContainers.forEach(ad => {
-      if (!ad || !ad.isConnected || ad.querySelector(".widget-container")) return;
 
-      // Get container dimensions (defaulting to common ad sizes if necessary).
+    adContainers.forEach(ad => {
+      if (!ad || !ad.isConnected) return;
+
       const adWidth = ad.offsetWidth || 300;
       const adHeight = ad.offsetHeight || 250;
 
-      // Choose a random widget.
       const widget = widgets[Math.floor(Math.random() * widgets.length)];
-
-      // Determine what message array to use based on widgetType:
-      // - "default": use widget.defaultMessages combined with customMessages (if any)
-      // - "custom": use customMessages exclusively (if available; else default)
-      // - "others": use widget.messages (default only)
-      let messagesArray = widget.messages;
-      if (settings.widgetType === "default") {
-        messagesArray = customMessages.length > 0 ? widget.messages.concat(customMessages) : widget.messages;
-      } else if (settings.widgetType === "custom") {
-        messagesArray = customMessages.length > 0 ? customMessages : widget.messages;
-      } else if (settings.widgetType === "others") {
-        messagesArray = widget.messages;
-      }
-
-      // Choose a random message from the determined array.
+      const messagesArray = widget.messages;
       const randomMessage = messagesArray[Math.floor(Math.random() * messagesArray.length)];
 
-      // Create widget container and apply the selected theme.
       const widgetContainer = document.createElement("div");
       widgetContainer.className = "widget-container theme-" + settings.theme;
       widgetContainer.style.width = `${adWidth}px`;
@@ -105,29 +99,33 @@
         <p class="widget-message">${randomMessage}</p>
       `;
 
-      // Replace ad content with widget.
-      ad.innerHTML = "";
-      ad.appendChild(widgetContainer);
-
-      // Add poll event listeners if needed.
       if (widget.title === "Quick Poll") {
         addPollEventListeners(widgetContainer);
       }
 
-      // Fade-in effect.
-      setTimeout(() => widgetContainer.classList.add("loaded"), 50);
+      widgetContainer.classList.add("loaded");
+
+      // **Replace the entire ad container instead of just clearing it**
+      const replacementDiv = document.createElement("div");
+      replacementDiv.className = "replacement-widget";
+      replacementDiv.appendChild(widgetContainer);
+
+      ad.replaceWith(replacementDiv);
     });
   }
 
-  // Inject CSS for widget styling and theme support.
   const style = document.createElement("style");
   style.textContent = `
     .widget-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
       background-color: #f9f9f9;
       border: 1px solid #ddd;
       border-radius: 8px;
       padding: 15px;
-      text-align: center;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
@@ -141,7 +139,7 @@
       margin-bottom: 10px;
     }
     .widget-message {
-      font-size: 14px;
+      font-size: clamp(12px, 4vw, 16px);
       color: #666;
     }
     .poll-btn {
@@ -156,9 +154,9 @@
     .poll-btn:hover {
       background-color: #0056b3;
     }
-    /* Example theme-specific styles */
-    .theme-default {
-      /* Default theme styles */
+    .poll-btn:disabled {
+      background-color: #4CAF50;
+      cursor: not-allowed;
     }
     .theme-dark {
       background-color: #333;
@@ -170,22 +168,16 @@
   `;
   document.head.appendChild(style);
 
-  // Retrieve stored settings from chrome.storage.
   let customMessages = [];
-  const settings = {
-    widgetType: "default", // options: "default", "custom", "others"
-    theme: "default"       // theme option chosen by user
-  };
+  const settings = { widgetType: "default", theme: "default" };
 
   chrome.storage.sync.get(["customMessages", "widgetType", "theme"], (result) => {
     customMessages = result.customMessages || [];
     settings.widgetType = result.widgetType || "default";
     settings.theme = result.theme || "default";
 
-    // Now run the ad replacement.
     replaceAds();
 
-    // Use a MutationObserver to monitor DOM changes.
     const observer = new MutationObserver(replaceAds);
     observer.observe(document.body, { childList: true, subtree: true });
   });
