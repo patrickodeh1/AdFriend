@@ -1,107 +1,183 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { motion } from "framer-motion"; // For animations
+(function () {
+  console.log("Extension loaded: Replacing ads with useful widgets...");
 
-// Expanded widgets array with more types of content
-const widgets = [
-    { type: "Motivation", content: "You got this! Keep pushing forward! 💪" },
-    { type: "Motivation", content: "Success is just around the corner. Keep moving! 🚀" },
-    { type: "Motivation", content: "Believe in yourself. You are stronger than you think! 🌟" },
-    { type: "Fun Fact", content: "Octopuses have three hearts! 🐙" },
-    { type: "Break Timer", content: "Time for a quick stretch! ⏳" },
-    { type: "Mindfulness", content: "Take a deep breath and relax. 🌿" },
-    { type: "Daily Challenge", content: "Avoid social media for 2 hours! ⏳" },
-    { type: "Mini Trivia", content: "What year was JavaScript created?", options: ["1995", "2005", "2015"] },
-    { type: "Coding Tips", content: "Use '===' instead of '==' for strict comparison in JavaScript!" },
-    { type: "Quote", content: "The only limit to our realization of tomorrow is our doubts of today. - Franklin D. Roosevelt" },
-    { type: "Joke", content: "Why don't programmers like nature? It has too many bugs! 🐛" },
-    { type: "Health Tip", content: "Take a 5-minute walk every hour to stay active! 🚶‍♂️" },
-];
+  const widgets = [
+    {
+      title: "Motivation",
+      messages: [
+        "Believe in yourself and all that you are! 💪",
+        "Hard work beats talent when talent doesn’t work hard. 🔥",
+        "Success is the sum of small efforts, repeated daily. 🚀"
+      ]
+    },
+    {
+      title: "Quick Poll",
+      messages: [
+        "<b>What's your favorite tech stack?</b> <br> <button class='poll-btn'>Frontend</button> <button class='poll-btn'>Backend</button> <button class='poll-btn'>Fullstack</button>",
+        "<b>Do you prefer night mode?</b> <br> <button class='poll-btn'>Yes</button> <button class='poll-btn'>No</button>",
+        "<b>Would you rather work remotely?</b> <br> <button class='poll-btn'>Yes</button> <button class='poll-btn'>No</button>"
+      ]
+    },
+    {
+      title: "Fun Fact",
+      messages: [
+        "Did you know? Honey never spoils! 🍯",
+        "Octopuses have three hearts! 🐙",
+        "Bananas are berries, but strawberries aren’t! 🍓"
+      ]
+    },
+    {
+      title: "Daily Challenge",
+      messages: [
+        "Today’s challenge: Avoid social media for 2 hours! ⏳",
+        "Today’s challenge: Read 5 pages of a book. 📖",
+        "Today’s challenge: Drink 2 liters of water. 💧"
+      ]
+    },
+    {
+      title: "Break Timer",
+      messages: [
+        "Take a deep breath and relax for 60 seconds. 🌿",
+        "Time for a 5-minute stretch break! 🏋️",
+        "Look away from the screen and rest your eyes. 👀"
+      ]
+    },
+    {
+      title: "Mindfulness Prompt",
+      messages: [
+        "Close your eyes and take three deep breaths. 🌬️",
+        "Think of one thing you're grateful for today. 🙏",
+        "Slow down and be present in this moment. ⏳"
+      ]
+    }
+  ];
 
-const AdReplacementWidget = ({ interval = 30000 }) => {
-    const [currentWidget, setCurrentWidget] = useState(null);
-    const [pollResponse, setPollResponse] = useState(null);
-    const intervalRef = useRef(null);
+  const adSelectors = [
+    "div.ad-container",
+    ".adsbygoogle",
+    "ins.adsbygoogle",
+    "div[id^='google_ads']",
+    "iframe[src*='googlesyndication']"
+  ];
 
-    // Function to update the widget with a random selection
-    const updateWidget = useCallback(() => {
-        const randomWidget = widgets[Math.floor(Math.random() * widgets.length)];
-        const widgetWithTimestamp = { ...randomWidget, timestamp: Date.now() };
-        setCurrentWidget(widgetWithTimestamp);
-        localStorage.setItem("lastWidget", JSON.stringify(widgetWithTimestamp)); // Store last widget with timestamp
-    }, []);
+  function handlePollButtonClick(event) {
+    const button = event.target;
+    const pollQuestion = button.parentElement.querySelector("b").textContent;
+    const selectedAnswer = button.textContent;
+    const funResponses = [
+      "Great choice! 🎉",
+      "Interesting pick! 🤔",
+      "Nice one! 😃",
+      "Good answer! 👍"
+    ];
+    alert(`You answered "${selectedAnswer}" to "${pollQuestion}"\n${funResponses[Math.floor(Math.random() * funResponses.length)]}`);
+    button.style.backgroundColor = "#4CAF50";
+    button.style.color = "white";
+    button.disabled = true;
+  }
 
-    useEffect(() => {
-        // Check localStorage for a stored widget and its expiry
-        const storedWidget = localStorage.getItem("lastWidget");
-        if (storedWidget) {
-            const parsedWidget = JSON.parse(storedWidget);
-            const isExpired = Date.now() - parsedWidget.timestamp > 3600000; // 1 hour expiry
-            if (!isExpired) {
-                setCurrentWidget(parsedWidget);
-            } else {
-                updateWidget();
-            }
-        } else {
-            updateWidget();
-        }
+  function addPollEventListeners(widgetContainer) {
+    const pollButtons = widgetContainer.querySelectorAll(".poll-btn");
+    pollButtons.forEach(button => {
+      button.addEventListener("click", handlePollButtonClick);
+    });
+  }
 
-        // Set interval to update the widget
-        intervalRef.current = setInterval(updateWidget, interval);
-        return () => clearInterval(intervalRef.current);
-    }, [updateWidget, interval]);
+  function replaceAds() {
+    const adContainers = document.querySelectorAll(adSelectors.join(", "));
 
-    // Function to handle poll responses
-    const handlePollResponse = (response) => {
-        setPollResponse(response);
-        setTimeout(() => setPollResponse(null), 5000); // Clear poll response after 5 seconds
-    };
+    adContainers.forEach(ad => {
+      if (!ad || !ad.isConnected) return;
 
-    return (
-        <motion.div
-            className="widget-container border p-4 rounded-lg shadow-md bg-white text-center"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-        >
-            {currentWidget && (
-                <>
-                    <h3 className="font-bold text-lg mb-2">{currentWidget.type}</h3>
-                    <p className="text-gray-700">{currentWidget.content}</p>
+      const adWidth = ad.offsetWidth || 300;
+      const adHeight = ad.offsetHeight || 250;
 
-                    {/* Display options for trivia widgets */}
-                    {currentWidget.options && (
-                        <div className="poll mt-4">
-                            <p className="font-semibold">Which one do you prefer?</p>
-                            {currentWidget.options.map((option, index) => (
-                                <button
-                                    key={index}
-                                    className="poll-btn bg-blue-500 text-white px-4 py-2 m-2 rounded transition hover:bg-blue-600"
-                                    onClick={() => handlePollResponse(`Option ${String.fromCharCode(65 + index)}`)}
-                                    aria-label={`Select ${option}`}
-                                >
-                                    {option}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                </>
-            )}
+      const widget = widgets[Math.floor(Math.random() * widgets.length)];
+      const messagesArray = widget.messages;
+      const randomMessage = messagesArray[Math.floor(Math.random() * messagesArray.length)];
 
-            {/* Display poll response */}
-            {pollResponse && (
-                <motion.div
-                    className="mt-3 text-green-600 font-semibold"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    {pollResponse === "Option A"
-                        ? "Great choice! You must love efficiency! 🚀"
-                        : "Nice pick! That shows creativity! 🎨"}
-                </motion.div>
-            )}
-        </motion.div>
-    );
-};
+      const widgetContainer = document.createElement("div");
+      widgetContainer.className = "widget-container theme-" + settings.theme;
+      widgetContainer.style.width = `${adWidth}px`;
+      widgetContainer.style.height = `${adHeight}px`;
+      widgetContainer.innerHTML = `
+        <h4 class="widget-title">${widget.title}</h4>
+        <p class="widget-message">${randomMessage}</p>
+      `;
 
-export default AdReplacementWidget;
+      if (widget.title === "Quick Poll") {
+        addPollEventListeners(widgetContainer);
+      }
+
+      widgetContainer.classList.add("loaded");
+
+      const replacementDiv = document.createElement("div");
+      replacementDiv.className = "replacement-widget";
+      replacementDiv.appendChild(widgetContainer);
+
+      ad.replaceWith(replacementDiv);
+    });
+  }
+
+  const style = document.createElement("style");
+  style.textContent = `
+    .widget-container {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    .widget-container.loaded {
+      opacity: 1;
+    }
+    .widget-title {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .widget-message {
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+    }
+    .poll-btn {
+      margin: 5px;
+      padding: 8px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .poll-btn:hover {
+      background-color: #0056b3;
+    }
+    .theme-dark {
+      background-color: #333;
+      color: #f9f9f9;
+    }
+    .theme-dark .widget-title {
+      color: #fff;
+    }
+  `;
+  document.head.appendChild(style);
+
+  let customMessages = [];
+  const settings = { widgetType: "default", theme: "default" };
+
+  chrome.storage.sync.get(["customMessages", "widgetType", "theme"], (result) => {
+    customMessages = result.customMessages || [];
+    settings.widgetType = result.widgetType || "default";
+    settings.theme = result.theme || "default";
+
+    replaceAds();
+
+    const observer = new MutationObserver(replaceAds);
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+})();
